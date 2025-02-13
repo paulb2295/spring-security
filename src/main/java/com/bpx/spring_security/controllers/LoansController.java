@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class WelcomeController {
+public class LoansController {
 
-    @GetMapping("/welcome")
-    public ResponseEntity<String> sayWelcome(){
-        return ResponseEntity.ok("Welcome to secured endpoint!");
+    @GetMapping("/my-loans")
+    public ResponseEntity<String> getLoansDetails(){
+        return ResponseEntity.ok("Loans details from DB");
     }
 }
