@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
+
 import javax.sql.DataSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -20,21 +21,17 @@ public class ProjectSecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(
-                (requests) -> requests
-                        .requestMatchers("/my-account", "/my-balance", "/my-loans", "/my-cards").authenticated()
-                        .requestMatchers("/notices", "/contact", "/error").permitAll()
-        );
+        http.csrf(csrfConfig-> csrfConfig.disable())
+                .authorizeHttpRequests(
+                        (requests) -> requests
+                                .requestMatchers("/my-account", "/my-balance", "/my-loans", "/my-cards").authenticated()
+                                .requestMatchers("/notices", "/contact", "/error", "/register").permitAll()
+                );
         http.formLogin(withDefaults()); //form login
         //http.formLogin(flc -> flc.disable()); // disabled form login
         http.httpBasic(withDefaults()); //postman
         //http.httpBasic(hbc -> hbc.disable()); //disabled httpBasic login
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
     }
 
     @Bean
@@ -44,7 +41,7 @@ public class ProjectSecurityConfig {
     }
 
     @Bean
-    public CompromisedPasswordChecker compromisedPasswordChecker(){ //verifies if password is week
+    public CompromisedPasswordChecker compromisedPasswordChecker() { //verifies if password is week
         return new HaveIBeenPwnedRestApiPasswordChecker();
     }
 }
